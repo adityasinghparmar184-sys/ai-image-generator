@@ -39,7 +39,7 @@ if st.button("🚀 Generate Image", type="primary"):
             try:
                 # Gemini Imagen 3 model se image banana
                 response = client.models.generate_images(
-                    model='imagen-3.0-capability-001',
+                    model='imagen-3.0-generate-002',
                     prompt=user_prompt,
                     config=dict(number_of_images=1, aspect_ratio="1:1")
                 )
