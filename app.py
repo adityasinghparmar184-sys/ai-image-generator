@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from PIL import Image
 import io
 
@@ -11,8 +11,8 @@ if "GEMINI_API_KEY" not in st.secrets:
     st.error("Please add GEMINI_API_KEY to your Streamlit Secrets!")
     st.stop()
 
-# Old stable library initialize karein
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+# Naya Official Client Initialize karein
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 # Quick Prompts
 st.subheader("💡 Quick Prompts")
@@ -36,17 +36,19 @@ if st.button("🚀 Generate Image", type="primary"):
     if user_prompt:
         with st.spinner("Gemini aapki image bana raha hai... Kripya intezar karein..."):
             try:
-                # Sabse stable model calling method
-                model = genai.ImageGenerationModel("imagen-3.0-generate-002")
-                result = model.generate_images(prompt=user_prompt, number_of_images=1)
+                # Naye SDK ke mutabik standard stable code structure
+                result = client.models.generate_images(
+                    model='imagen-3.0-generate-002',
+                    prompt=user_prompt
+                )
                 
-                for generated_image in result.images:
-                    image = Image.open(io.BytesIO(generated_image.image_bytes))
+                for generated_image in result.generated_images:
+                    image = Image.open(io.BytesIO(generated_image.image.image_bytes))
                     st.image(image, caption=user_prompt, use_container_width=True)
                     
                     st.download_button(
                         label="📥 Download Image",
-                        data=generated_image.image_bytes,
+                        data=generated_image.image.image_bytes,
                         file_name="ai_image.jpg",
                         mime="image/jpeg"
                     )
@@ -54,4 +56,3 @@ if st.button("🚀 Generate Image", type="primary"):
                 st.error(f"❌ Generation Failed: {e}")
     else:
         st.warning("Pehle koi prompt toh likhiye!")
-            
